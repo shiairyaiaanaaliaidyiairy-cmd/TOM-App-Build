@@ -1,0 +1,23 @@
+name: Build APK
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    - name: Unzip project
+      run: unzip TOM.zip
+    - name: Grant execute permission for gradlew
+      run: chmod +x TOM/gradlew
+    - name: Build APK
+      run: cd TOM && ./gradlew assembleRelease -x sdkReleaseDependencyData
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: TOM-APK
+        path: TOM/app/build/outputs/apk/release/*.apk
